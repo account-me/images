@@ -1,33 +1,38 @@
-window.onload = function() {
-  var imageList = document.getElementById("image-list");
+$(document).ready(function() {
+  var imageList = $("#image-list");
   var images = [];
 
-  // قم بجلب جميع الصور في المجلد
+  // جلب جميع الصور في المجلد
   fetchImages();
 
   function fetchImages() {
     // احصل على قائمة الملفات في المجلد الحالي
-    fetch('./')
-      .then(response => response.text())
-      .then(data => {
-        var parser = new DOMParser();
-        var html = parser.parseFromString(data, 'text/html');
-        var files = Array.from(html.getElementsByTagName('a')).map(a => a.getAttribute('href'));
-        
+    $.ajax({
+      url: "./",
+      success: function(data) {
+        var files = $(data).find("a").map(function() { return $(this).attr("href"); }).get();
+
         // احصل على الصور فقط واحفظها في المصفوفة "images"
-        images = files.filter(file => /\.(jpe?g|png|gif)$/i.test(file));
-        
+        images = files.filter(function(file) {
+          return /\.(jpe?g|png|gif)$/i.test(file);
+        });
+
         // عرض أسماء الصور
         displayImages();
-      });
+      }
+    });
   }
 
   function displayImages() {
-    images.forEach(image => {
-      var listItem = document.createElement("li");
-      listItem.textContent = image;
-      imageList.appendChild(listItem);
+    images.forEach(function(image) {
+      var listItem = $("<li></li>").text(image);
+      imageList.append(listItem);
     });
   }
-};
+});
+
+
+
+
+
 
